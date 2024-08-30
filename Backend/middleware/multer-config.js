@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
     }
 });
 
-// Middleware pour optimiser l'image téléchargée et la convertir en WebP si nécessaire.
+// Middleware pour optimiser l'image téléchargée et la convertir en WebP si besoin
 const optimizeImage = async (req, res, next) => {
     if (!req.file) return next();
 
