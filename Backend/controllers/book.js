@@ -1,6 +1,7 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 
+// Créer un livre
 exports.createBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
@@ -16,12 +17,8 @@ exports.createBook = (req, res, next) => {
         .catch(error => { res.status(400).json({ error }) })
 }
 
-
-exports.createRating = () => {
-
-}
-
-exports.updateBook = (req, res, next) => {
+// Modifier un livre
+exports.modifyBook = (req, res, next) => {
     const bookObject = req.file
         ? {
             ...JSON.parse(req.body.book),
@@ -40,15 +37,23 @@ exports.updateBook = (req, res, next) => {
                     { _id: req.params.id },
                     { ...bookObject, _id: req.params.id }
                 )
-                    .then(() => res.status(200).json({ message: 'Livre modifié !' }))
-                    .catch((error) => res.status(500).json({ error }));
+                    .then(() => {
+                        // Supprimer l'ancienne image
+                        if (req.file && book.imageUrl) {
+                            const imagePath = book.imageUrl.split("/images/")[1];
+                            fs.unlinkSync(`images/${imagePath}`);
+                        }
+                        res.status(200).json({ message: "Livre modifié!" });
+                    })
+                    .catch((error) => res.status(401).json({ error }));
             }
         })
         .catch((error) => {
             res.status(400).json({ error });
         });
-}
+};
 
+// Supprimer un livre
 exports.deleteBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then((book) => {
@@ -61,7 +66,7 @@ exports.deleteBook = (req, res, next) => {
                         .then(() => {
                             res.status(200).json({ message: 'Livre supprimé' });
                         })
-                        .catch((error) => res.status(500).json({ error }));
+                        .catch((error) => res.status(401).json({ error }));
                 });
             }
         })
@@ -70,23 +75,77 @@ exports.deleteBook = (req, res, next) => {
         });
 }
 
+// Afficher un livre avec son ID
 exports.getOneBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
-        .then(() => res.status(200).json({ message: "Un livre récupéré" }))
+        .then((book) => res.status(200).json(book))
         .catch(error => res.status(404).json({ error }));
 };
 
-exports.getAllBook = async (req, res, next) => {
-    try {
-        const book = await Book.find();
-        res.status(200).json(book);
-    } catch (error) {
-        res.status(500).json({ error });
-    }
+// Afficher tous les livres
+exports.getAllBook = (req, res, next) => {
+    Book.find()
+        .then((books) => res.status(200).json(books))
+        .catch((error) => res.status(400).json({ error }));
 };
 
+// 3 livres avec la meilleure note moyenne
 exports.getBestRating = (req, res, next) => {
     Book.find().sort({ averageRating: -1 }).limit(3)
-        .then(() => res.status(200).json({ message: "Les livres les mieux notés" }))
+        .then((books) => res.status(200).json(books))
         .catch(error => res.status(500).json({ error }));
+};
+
+// Donner une note à un livre + calculer la moyenne d'étoiles de ce livre
+exports.createRating = (req, res, next) => {
+    const userId = req.body.userId;
+    const grade = req.body.rating;
+    // Vérifier que la note est comprise entre 0 et 5
+    if (grade < 0 || grade > 5) {
+        return res
+            .status(400)
+            .json({ message: "La note doit être comprise entre 0 et 5." });
+    }
+
+    Book.findOne({ _id: req.params.id })
+        .then((book) => {
+            if (!book) {
+                return res.status(400).json({ message: "Livre non trouvé! " });
+            }
+            if (book.userId === req.auth.userId) {
+                return res.status(401).json({ message: "Non-authorisé" });
+            }
+
+            const hasAlreadyRated = book.ratings.some(
+                (rating) => rating.userId.toString() === userId
+            );
+            if (hasAlreadyRated) {
+                return res
+                    .status(400)
+                    .json({ message: "L'utilisateur a déjà noté ce livre" });
+            }
+
+            // Ajouter la nouvelle note au tableau des notes du livre
+            book.ratings.push({ userId, grade });
+
+            // Recalculer de la moyenne des notes
+            const totalGrade = book.ratings.reduce(
+                (accumulator, currentValue) => accumulator + currentValue.grade,
+                0
+            );
+            const averageRating = totalGrade / book.ratings.length;
+
+            // Limiter la moyenne à un seul chiffre après la virgule
+            const roundedAverageRating = parseFloat(averageRating.toFixed(1));
+
+            // Mise à jour de la moyenne dans le livre
+            book.averageRating = roundedAverageRating;
+
+            // Sauvegarder les modifications dans la base de données
+            book
+                .save()
+                .then(() => res.status(200).json(book))
+                .catch((error) => res.status(400).json({ error }));
+        })
+        .catch((error) => res.status(400).json({ error }));
 };
