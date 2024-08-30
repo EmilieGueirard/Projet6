@@ -22,7 +22,8 @@ router.put("/:id", auth, upload, optimizeImage, bookCtrl.modifyBook);
 // Delete
 router.delete("/:id", auth, bookCtrl.deleteBook);
 
-// --- Books -> rating
+// --- Books -> Rating
+
 // Create Rating
 router.post("/:id/rating", auth, bookCtrl.createRating);
 
