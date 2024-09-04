@@ -1,13 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require("path");
-require("dotenv").config();
+const path = require('path');
+require('dotenv').config();
 
-const bookRoutes = require("./Routes/Book");
-const userRoutes = require("./Routes/User");
+const bookRoutes = require('./Routes/Book');
+const userRoutes = require('./Routes/User');
 
 const app = express();
 
+// Connecting to MongoDB Database //
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));

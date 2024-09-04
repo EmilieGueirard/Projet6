@@ -8,23 +8,23 @@ const { upload, optimizeImage } = require('../Middleware/Multer-config');
 
 // Index
 router.get('/', bookCtrl.getAllBook);
-router.get("/bestrating", bookCtrl.getBestRating);
+router.get('/bestrating', bookCtrl.getBestRating);
 
 // Create
-router.post("/", auth, upload, optimizeImage, bookCtrl.createBook);
+router.post('/', auth, upload, optimizeImage, bookCtrl.createBook);
 
 // Read
 router.get('/:id', bookCtrl.getOneBook);
 
 // Update
-router.put("/:id", auth, upload, optimizeImage, bookCtrl.modifyBook);
+router.put('/:id', auth, upload, optimizeImage, bookCtrl.modifyBook);
 
 // Delete
-router.delete("/:id", auth, bookCtrl.deleteBook);
+router.delete('/:id', auth, bookCtrl.deleteBook);
 
 // --- Books -> Rating
 
 // Create Rating
-router.post("/:id/rating", auth, bookCtrl.createRating);
+router.post('/:id/rating', auth, bookCtrl.createRating);
 
 module.exports = router;

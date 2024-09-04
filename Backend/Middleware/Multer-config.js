@@ -39,7 +39,7 @@ const optimizeImage = async (req, res, next) => {
 
         // Convertir l'image en WebP en utilisant webp-converter
         try {
-            const result = webp.cwebp(originalImagePath, optimizedImagePath, "-q 80");
+            const result = webp.cwebp(originalImagePath, optimizedImagePath, '-q 80');
             await result;
 
             // Supprimer l'image originale après optimisation
