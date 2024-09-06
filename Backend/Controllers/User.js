@@ -2,8 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../Models/User');
 
+// SIGN UP //
 exports.signup = (req, res, next) => {
-    // Vérifier si l'e-mail est valide
     if (!/\S+@\S+\.\S+/.test(req.body.email)) {
         return res.status(400).json({ error: "L'e-mail est invalide !" });
     }
@@ -20,6 +20,7 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
+// LOGIN //
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {

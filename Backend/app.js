@@ -21,6 +21,7 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware : interpret JSON data from requests //
 app.use(express.json());
 
 // Middlewares : routes //

@@ -4,8 +4,10 @@ const path = require('path');
 const sharp = require('sharp');
 const webp = require('webp-converter');
 
+// Disablle sharp cache //
 sharp.cache(false);
 
+// Definition of MIMI types //
 const MIME_TYPES = {
     'image/jpg': 'jpg',
     'image/jpeg': 'jpg',
@@ -13,6 +15,7 @@ const MIME_TYPES = {
     'image/webp': 'webp'
 };
 
+// Configuring multer to manage image storage //
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
         callback(null, 'images');
@@ -24,7 +27,7 @@ const storage = multer.diskStorage({
     }
 });
 
-// Middleware : optimiser images
+// Middleware : optimization images
 const optimizeImage = async (req, res, next) => {
     if (!req.file) return next();
 
@@ -53,7 +56,6 @@ const optimizeImage = async (req, res, next) => {
                 }
             });
         }
-
         req.file.path = optimizedImagePath;
         req.file.filename = optimizedImageName;
         next();
@@ -62,6 +64,7 @@ const optimizeImage = async (req, res, next) => {
     }
 };
 
+// Middleware Multer : upload
 const upload = multer({ storage }).single('image');
 
 module.exports = {
