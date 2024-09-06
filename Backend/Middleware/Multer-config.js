@@ -1,7 +1,10 @@
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 const webp = require('webp-converter');
+
+sharp.cache(false);
 
 const MIME_TYPES = {
     'image/jpg': 'jpg',
@@ -21,7 +24,7 @@ const storage = multer.diskStorage({
     }
 });
 
-// Middleware pour optimiser l'image téléchargée et la convertir en WebP si besoin
+// Middleware : optimiser images
 const optimizeImage = async (req, res, next) => {
     if (!req.file) return next();
 
@@ -30,34 +33,33 @@ const optimizeImage = async (req, res, next) => {
     const isWebP = ext === '.webp';
     let optimizedImageName, optimizedImagePath;
 
-    if (isWebP) {
-        optimizedImageName = path.basename(originalImagePath);
-        optimizedImagePath = originalImagePath;
-    } else {
-        optimizedImageName = `optimized_${path.basename(originalImagePath, ext)}.webp`;
-        optimizedImagePath = path.join('images', optimizedImageName);
+    try {
+        if (isWebP) {
+            optimizedImageName = path.basename(originalImagePath);
+            optimizedImagePath = originalImagePath;
+        } else {
+            optimizedImageName = `optimized_${path.basename(originalImagePath, ext)}.webp`;
+            optimizedImagePath = path.join('images', optimizedImageName);
 
-        // Convertir l'image en WebP en utilisant webp-converter
-        try {
-            const result = webp.cwebp(originalImagePath, optimizedImagePath, '-q 80');
-            await result;
+            await sharp(originalImagePath)
+                .resize({ fit: 'contain' })
+                .webp({ quality: 80 })
+                .toFile(optimizedImagePath);
 
-            // Supprimer l'image originale après optimisation
             fs.unlink(originalImagePath, (error) => {
                 if (error) {
                     console.error("Impossible de supprimer l'image originale :", error);
                     return next(error);
                 }
             });
-        } catch (error) {
-            return next(error);
         }
+
+        req.file.path = optimizedImagePath;
+        req.file.filename = optimizedImageName;
+        next();
+    } catch (error) {
+        return next(error);
     }
-
-    req.file.path = optimizedImagePath;
-    req.file.filename = optimizedImageName;
-
-    next();
 };
 
 const upload = multer({ storage }).single('image');
