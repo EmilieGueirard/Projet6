@@ -33,10 +33,10 @@ npm install
 Créez un fichier **.env** dans le dossier Backend pour configurer la connexion à la base de données et la clé secrète JWT.
 
 Voici un exemple du contenu du fichier **.env** :
-        ```
-        MONGODB_URI=<votre_url_mongodb>
-        JWT_SECRET=RANDOM_TOKEN_SECRET
-        ```
+```
+MONGODB_URI=<votre_url_mongodb>
+JWT_SECRET=RANDOM_TOKEN_SECRET
+```
 
 Explications :
 - ```MONGODB_URI``` : Remplacez ```<votre_url_mongodb>``` par l'URL de votre base de données MongoDB. Cela permettra au Backend de se connecter à la base de données.
