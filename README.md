@@ -32,14 +32,14 @@ npm install
 ### 3. Fichier .env
 Créez un fichier **.env** dans le dossier Backend pour configurer la connexion à la base de données et la clé secrète JWT.
 
-    Voici un exemple du contenu du fichier **.env** :
+Voici un exemple du contenu du fichier **.env** :
         ```
         MONGODB_URI=<votre_url_mongodb>
         JWT_SECRET=RANDOM_TOKEN_SECRET
         ```
-        
+
 Explications :
-- ```MONGODB_URI``` : Remplacez ```<votre_url_mongodb>``` par l'URL de votre base de données MongoDB. Cela permettra au backend de se connecter à la base de données.
+- ```MONGODB_URI``` : Remplacez ```<votre_url_mongodb>``` par l'URL de votre base de données MongoDB. Cela permettra au Backend de se connecter à la base de données.
 
 - ```JWT_SECRET``` : ```RANDOM_TOKEN_SECRET``` est utilisé ici comme une clé temporaire pour signer les tokens JWT. Puisqu'il s'agit d'un projet éducatif, cette clé est suffisante. Dans un projet réel, il est recommandé d'utiliser une clé secrète plus complexe.
 
@@ -52,12 +52,12 @@ npm start
 ```
 
 ### 5. Démarrer le Backend
-Dans le dossier **Backend**, démarrez le serveur backend en utilisant nodemon :
+Dans le dossier **Backend**, démarrez le serveur Backend en utilisant nodemon :
 ```
 nodemon server.js
 ```
-Le serveur backend sera démarré sur le port 4000, et le frontend fonctionnera par défaut sur le port 3000.
+Le serveur Backend sera démarré sur le port 4000, et le Frontend fonctionnera par défaut sur le port 3000.
 
 # Remarque
 
-Ce projet est un exemple d'application backend, et **RANDOM_TOKEN_SECRET** est utilisé comme clé JWT pour simplifier la configuration. Dans un environnement de production, il est important d'utiliser une clé secrète forte et sécurisée.
+Ce projet est un exemple d'application Backend, et **RANDOM_TOKEN_SECRET** est utilisé comme clé JWT pour simplifier la configuration. Dans un environnement de production, il est important d'utiliser une clé secrète forte et sécurisée.
